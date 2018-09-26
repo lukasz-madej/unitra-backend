@@ -4,8 +4,9 @@ const equipmentService = require('./equipment.service');
 
 module.exports = router;
 
-router.post('/create', create);
+router.put('/create', create);
 router.post('/update/:id', update);
+router.delete('/remove/:id', remove);
 router.get('/get/:id', getById);
 
 function create(request, response, next) {
@@ -20,6 +21,12 @@ function update(request, response, next) {
       response.json(equipment) :
       response.status(404).json({ message: 'Equipment to update not found' }))
     .catch(error => next(error))
+}
+
+function remove(request, response, next) {
+  equipmentService.remove(request.params)
+    .then(equipment => response.status(200).json(equipment))
+    .catch(error => next(error));
 }
 
 function getById(request, response, next) {

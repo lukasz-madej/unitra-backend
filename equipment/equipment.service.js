@@ -3,6 +3,7 @@ const knex = require('knex') (require('../knexfile'));
 module.exports = {
   create,
   update,
+  remove,
   getById
 };
 
@@ -23,6 +24,12 @@ async function update({ id, name, description, productionDate }) {
       description,
       productionDate
     });
+}
+
+async function remove({ id }) {
+  return await  knex('equipment')
+    .where({ id })
+    .del()
 }
 
 async function getById({ id }) {
