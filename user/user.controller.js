@@ -5,7 +5,7 @@ const userService = require('./user.service');
 module.exports = router;
 
 router.post('/authenticate', authenticate);
-router.post('/create', create);
+router.put('/create', create);
 router.get('/get/:id', getById);
 
 function authenticate(request, response, next) {
