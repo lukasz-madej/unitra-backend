@@ -11,7 +11,7 @@ app.use(cors());
 app.use(jwt());
 app.use(errorHandler);
 
-app.use('/user', require('./user/user.controller'));
+app.use('/users', require('./users/users.controller'));
 app.use('/equipment', require('./equipment/equipment.controller'));
 
 const server = app.listen(7555, () => {
