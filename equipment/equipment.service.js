@@ -16,13 +16,14 @@ async function create({ name, description, productionDate }) {
     });
 }
 
-async function update({ id, name, description, productionDate }) {
+async function update({ id, name, description, productionDate, categoryId }) {
   return await knex('equipment')
     .where({ id })
     .update({
       name,
       description,
-      productionDate
+      productionDate,
+      categoryId
     });
 }
 
