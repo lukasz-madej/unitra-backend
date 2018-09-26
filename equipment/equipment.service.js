@@ -7,12 +7,13 @@ module.exports = {
   getById
 };
 
-async function create({ name, description, productionDate }) {
+async function create({ name, description, productionDate, categoryId }) {
   return await knex('equipment')
     .insert({
       name,
       description,
-      productionDate
+      productionDate,
+      categoryId
     });
 }
 
@@ -28,7 +29,7 @@ async function update({ id, name, description, productionDate, categoryId }) {
 }
 
 async function remove({ id }) {
-  return await  knex('equipment')
+  return await knex('equipment')
     .where({ id })
     .del()
 }
