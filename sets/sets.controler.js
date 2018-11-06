@@ -21,7 +21,7 @@ function update(request, response, next) {
   setsService.update({ id: request.params.id, ...request.body })
     .then(set => set ?
       response.json(set) :
-      response.status(404).json({ message: 'Set to update not found' }))
+      response.status(404).json({ message: 'Set not found' }))
     .catch(error => next(error))
 }
 

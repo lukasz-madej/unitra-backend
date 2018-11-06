@@ -19,7 +19,7 @@ function update(request, response, next) {
   categoriesService.update({ id: request.params.id, ...request.body })
     .then(category => category ?
       response.json(category) :
-      response.status(404).json({ message: 'Category to update not found' }))
+      response.status(404).json({ message: 'Category not found' }))
     .catch(error => next(error))
 }
 

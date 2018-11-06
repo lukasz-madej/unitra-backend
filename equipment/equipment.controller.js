@@ -20,7 +20,7 @@ function update(request, response, next) {
   equipmentService.update({ id: request.params.id, ...request.body })
     .then(equipment => equipment ?
       response.json(equipment) :
-      response.status(404).json({ message: 'Equipment to update not found' }))
+      response.status(404).json({ message: 'Equipment not found' }))
     .catch(error => next(error))
 }
 
@@ -42,6 +42,6 @@ function setCategory(request, response, next) {
   equipmentService.update({ id: request.params.id, categoryId: request.body.categoryId })
     .then(equipment => equipment ?
       response.json(equipment) :
-      response.status(404).json({ message: 'Equipment to patch not found' }))
+      response.status(404).json({ message: 'Equipment not found' }))
     .catch(error => next(error))
 }
