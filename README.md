@@ -35,7 +35,7 @@ FLUSH PRIVILEGES;
 ```
 *quit*
 ```sql
-/q
+\q
 ```
 
 *restart MySQL server*
