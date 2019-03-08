@@ -27,7 +27,7 @@ USE mysql;
 ```
 *set your new password for the root user*
 ```sql
-UPDATE mysql.user SET authentication_string=PASSWORD('NEW_PASSWORD') WHERE User='root';
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'ROOT_PASSWORD';
 ```
 *refresh credentials*
 ```sql
@@ -36,6 +36,11 @@ FLUSH PRIVILEGES;
 *quit*
 ```sql
 /q
+```
+
+*restart MySQL server*
+```bash
+mysql.server restart
 ```
 
 #### 5. Open MySQL console with your new password
@@ -62,7 +67,7 @@ FLUSH PRIVILEGES;
 ```
 *quit*
 ```sql
-/q
+\q
 ```
 
 ## 2. Setup database connection and run migrations
