@@ -4,9 +4,17 @@ const userService = require('./users.service');
 
 module.exports = router;
 
+router.get('/:id', getById);
 router.post('/authenticate', authenticate);
-router.put('/create', create);
-router.get('/get/:id', getById);
+router.put('/', create);
+
+function getById(request, response, next) {
+  userService.getById(request.params)
+    .then(user => user ?
+      response.json(user) :
+      response.status(404).json({ message: 'User not found' }))
+    .catch(error => next(error));
+}
 
 function authenticate(request, response, next) {
   userService.authenticate(request.body)
@@ -19,13 +27,5 @@ function authenticate(request, response, next) {
 function create(request, response, next) {
   userService.create(request.body)
     .then(user => response.status(201).json(user))
-    .catch(error => next(error));
-}
-
-function getById(request, response, next) {
-  userService.getById(request.params)
-    .then(user => user ?
-      response.json(user) :
-      response.status(404).json({ message: 'User not found' }))
     .catch(error => next(error));
 }
