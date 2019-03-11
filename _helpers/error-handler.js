@@ -1,6 +1,6 @@
 module.exports = errorHandler;
 
-function errorHandler(error, request, response) {
+function errorHandler(error, request, response, next) {
   if (typeof error === 'string') {
     return response.status(400).json({ message: error });
   }
