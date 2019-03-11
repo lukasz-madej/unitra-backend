@@ -1,11 +1,15 @@
 const express = require('express');
-const router = express.Router();
+const validate = require('express-validation');
+
 const userService = require('./users.service');
+const userValidations = require('../validations/users');
+
+const router = express.Router();
 
 module.exports = router;
 
 router.get('/:id', getById);
-router.post('/authenticate', authenticate);
+router.post('/authenticate', validate(userValidations.authenticate), authenticate);
 router.put('/', create);
 
 function getById(request, response, next) {

@@ -1,6 +1,7 @@
 const knex = require('knex') (require('../knexfile'));
 const jwt = require('jsonwebtoken');
 
+const config = require('../config');
 const userHelper = require('../_helpers/user-helper');
 
 module.exports = {
@@ -20,14 +21,14 @@ async function create({ username, password }) {
 }
 
 async function authenticate({ username, password }) {
-  const user = getByUsername({ username });
+  const user = await getByUsername({ username });
 
-  if (user && user.password === userHelper.generateHash(password, user.salt)) {
+  if (user && user.password === userHelper.generateHash(password, user.salt).digest('hex')) {
     const token = jwt.sign({ sub: user.id }, config.secret);
     const { password, ...userWithoutPassword } = user;
 
     return Promise.resolve({
-      ...userWithoutPassword,
+      user: userWithoutPassword,
       token
     });
   } else {
@@ -36,9 +37,9 @@ async function authenticate({ username, password }) {
 }
 
 async function getById({ id }) {
-  return await knex('users').where({ id });
+  return await knex('users').where({ id }).first();
 }
 
 async function getByUsername({ username }) {
-  return await knex('users').where({ username });
+  return await knex('users').where({ username }).first();
 }
