@@ -4,26 +4,12 @@ const setsService = require('./sets.service');
 
 module.exports = router;
 
-router.put('/create', create);
-router.post('/update/:id', update);
-router.get('/get', getAll);
-router.get('/get/:id', getById);
-router.get('/get/:id/members', getByIdWithMembers);
-router.delete('/remove/:id', remove);
-
-function create(request, response, next) {
-  setsService.create(request.body)
-    .then(set => response.status(201).json(set))
-    .catch(error => next(error));
-}
-
-function update(request, response, next) {
-  setsService.update({ id: request.params.id, ...request.body })
-    .then(set => set ?
-      response.json(set) :
-      response.status(404).json({ message: 'Set not found' }))
-    .catch(error => next(error))
-}
+router.get('/', getAll);
+router.get('/:id', getById);
+router.get('/:id/members', getByIdWithMembers);
+router.post('/:id', update);
+router.put('/', create);
+router.delete('/:id', remove);
 
 function getAll(request, response, next) {
   setsService.create(request.body)
@@ -44,6 +30,20 @@ function getByIdWithMembers(request, response, next) {
     .then(set => set ?
       response.json(set) :
       response.status(404).json({ message: 'Set not found' }))
+    .catch(error => next(error));
+}
+
+function update(request, response, next) {
+  setsService.update({ id: request.params.id, ...request.body })
+    .then(set => set ?
+      response.json(set) :
+      response.status(404).json({ message: 'Set not found' }))
+    .catch(error => next(error))
+}
+
+function create(request, response, next) {
+  setsService.create(request.body)
+    .then(set => response.status(201).json(set))
     .catch(error => next(error));
 }
 
