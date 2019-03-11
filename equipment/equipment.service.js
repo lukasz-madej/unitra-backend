@@ -4,7 +4,8 @@ module.exports = {
   create,
   update,
   remove,
-  getById
+  getById,
+  getAll
 };
 
 async function create({ name, description, productionDate, categoryId }) {
@@ -36,4 +37,8 @@ async function remove({ id }) {
 
 async function getById({ id }) {
   return await knex('equipment').where({ id });
+}
+
+async function getAll() {
+  return await knex('equipment').select();
 }
