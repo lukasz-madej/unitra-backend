@@ -33,7 +33,7 @@ async function remove({ id }) {
 }
 
 async function getById({ id }) {
-  return await knex('categories').where({ id });
+  return await knex('categories').where({ id }).first();
 }
 
 async function getAll() {

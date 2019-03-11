@@ -38,11 +38,12 @@ async function getAll() {
 
 async function getById({ id }) {
   return await knex('sets')
-    .where({ id });
+    .where({ id }).first();
 }
 
 async function getByIdWithMembers({ id }) {
   return await knex('sets')
     .where({ id })
-    .leftJoin('equipment', 'sets.id', 'equipment.setId');
+    .leftJoin('equipment', 'sets.id', 'equipment.setId')
+    .first();
 }
