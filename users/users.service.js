@@ -1,6 +1,7 @@
 const knex = require('knex') (require('../knexfile'));
-const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+
+const userHelper = require('../_helpers/user-helper');
 
 module.exports = {
   create,
@@ -9,7 +10,7 @@ module.exports = {
 };
 
 async function create({ username, password }) {
-  const { salt, hash } = saltHashPassword(password);
+  const { salt, hash } = userHelper.saltHashPassword(password);
   return await knex('users')
     .insert({
       name,
@@ -21,14 +22,16 @@ async function create({ username, password }) {
 async function authenticate({ username, password }) {
   const user = getByUsername({ username });
 
-  if (user && user.password === generateHash(password)) {
+  if (user && user.password === userHelper.generateHash(password, user.salt)) {
     const token = jwt.sign({ sub: user.id }, config.secret);
     const { password, ...userWithoutPassword } = user;
 
-    return {
+    return Promise.resolve({
       ...userWithoutPassword,
       token
-    }
+    });
+  } else {
+    return Promise.reject({ status: 401, error: 'Invalid username or password' });
   }
 }
 
@@ -38,18 +41,4 @@ async function getById({ id }) {
 
 async function getByUsername({ username }) {
   return await knex('users').where({ username });
-}
-
-function saltHashPassword(password) {
-  const salt = crypto.randomBytes(4).toString('hex');
-  const hash = generateHash(password, salt);
-
-  return {
-    salt,
-    hash: hash.digest('hex')
-  }
-}
-
-function generateHash(password, salt) {
-  return crypto.createHmac('sha512', salt).update(password);
 }
