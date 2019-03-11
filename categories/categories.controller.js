@@ -1,17 +1,27 @@
 const express = require('express');
-const router = express.Router();
+
 const categoriesService = require('./categories.service');
+
+const router = express.Router();
 
 module.exports = router;
 
-router.put('/create', create);
-router.post('/update/:id', update);
-router.delete('/remove/:id', remove);
-router.get('/get/', getAll);
+router.get('/:id', getById)
+router.get('/', getAll);
+router.post('/:id', update);
+router.put('/', create);
+router.delete('/:id', remove);
 
-function create(request, response, next) {
-  categoriesService.create(request.body)
+
+function getById(request, response, next) {
+  categoriesService.getById(request.params)
     .then(category => response.status(201).json(category))
+    .catch(error => next(error));
+}
+
+function getAll(request, response, next) {
+  categoriesService.getAll()
+    .then(categories => response.status(201).json(categories))
     .catch(error => next(error));
 }
 
@@ -23,15 +33,15 @@ function update(request, response, next) {
     .catch(error => next(error))
 }
 
+function create(request, response, next) {
+  categoriesService.create(request.body)
+    .then(category => response.status(201).json(category))
+    .catch(error => next(error));
+}
+
 function remove(request, response, next) {
   categoriesService.remove(request.params)
     .then(categoriesService.removeCategoryRelations(request.params.id))
     .then(category => response.status(200).json(category))
-    .catch(error => next(error));
-}
-
-function getAll(request, response, next) {
-  categoriesService.getAll()
-    .then(categories => response.status(201).json(categories))
     .catch(error => next(error));
 }

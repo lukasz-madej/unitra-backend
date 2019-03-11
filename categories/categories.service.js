@@ -4,6 +4,7 @@ module.exports = {
   create,
   update,
   remove,
+  getById,
   getAll,
   removeCategoryRelations
 };
@@ -29,6 +30,10 @@ async function remove({ id }) {
   return await knex('categories')
     .where({ id })
     .del();
+}
+
+async function getById({ id }) {
+  return await knex('categories').where({ id });
 }
 
 async function getAll() {
