@@ -1,54 +1,59 @@
 const express = require('express');
-const router = express.Router();
+const validate = require('express-validation');
+
 const equipmentService = require('./equipment.service');
+const equipmentValidations = require('../validations/equipment');
+
+const router = express.Router();
+
+const getById = (request, response, next) => {
+  equipmentService.get(request.params)
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+}
+
+const getAll = (request, response, next) => {
+  equipmentService.getAll()
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+}
+
+const create = (request, response, next) => {
+  equipmentService.create(request.body)
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+}
+
+const update = (request, response, next) => {
+  equipmentService.update(request.params.id, request.body)
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+}
+
+const remove = (request, response, next) => {
+  equipmentService.remove(request.params)
+    .then(result => response.status(result.status))
+    .catch(error => response.status(error.status).json(error));
+}
+
+const setCategory = (request, response, next) => {
+  equipmentService.update(request.params.id, { categoryId: request.body.categoryId })
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+}
+
+const setSet = (request, response, next) => {
+  equipmentService.update(request.params.id, { setId: request.body.setId })
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+}
 
 module.exports = router;
 
-router.get('/:id', getById);
+router.get('/:id', validate(equipmentValidations.pathId), getById);
 router.get('/', getAll);
-router.post('/:id', update);
-router.put('/', create);
-router.delete('/:id', remove);
-router.patch('/set-category/:id', setCategory)
-
-function getById(request, response, next) {
-  equipmentService.getById(request.params)
-    .then(equipment => equipment ?
-      response.json(equipment) :
-      response.status(404).json({ message: 'Equipment not found' }))
-    .catch(error => next(error));
-}
-
-function getAll(request, response, next) {
-  equipmentService.getAll()
-    .then(equipment => response.status(201).json(equipment))
-    .catch(error => next(error));
-}
-
-function create(request, response, next) {
-  equipmentService.create(request.body)
-    .then(equipment => response.status(201).json(equipment))
-    .catch(error => next(error));
-}
-
-function update(request, response, next) {
-  equipmentService.update({ id: request.params.id, ...request.body })
-    .then(equipment => equipment ?
-      response.json(equipment) :
-      response.status(404).json({ message: 'Equipment not found' }))
-    .catch(error => next(error))
-}
-
-function remove(request, response, next) {
-  equipmentService.remove(request.params)
-    .then(equipment => response.status(200).json(equipment))
-    .catch(error => next(error));
-}
-
-function setCategory(request, response, next) {
-  equipmentService.update({ id: request.params.id, categoryId: request.body.categoryId })
-    .then(equipment => equipment ?
-      response.json(equipment) :
-      response.status(404).json({ message: 'Equipment not found' }))
-    .catch(error => next(error))
-}
+router.put('/:id', validate(equipmentValidations.update), update);
+router.post('/', validate(equipmentValidations.create), create);
+router.delete('/:id', validate(equipmentValidations.pathId), remove);
+router.patch('/set-category/:id', validate(equipmentValidations.setCategory), setCategory);
+router.patch('/set-set/:id', validate(equipmentValidations.setSet), setSet);

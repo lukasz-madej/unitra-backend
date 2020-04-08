@@ -1,44 +1,69 @@
 const knex = require('knex') (require('../knexfile'));
 
-module.exports = {
-  create,
-  update,
-  remove,
-  getById,
-  getAll
-};
-
-async function create({ name, description, productionDate, categoryId }) {
-  return knex('equipment')
+const create = async ({ name, description, productionDate, categoryId, setId, serialNumber }) =>
+  knex('equipment')
     .insert({
       name,
       description,
       productionDate,
-      categoryId
+      categoryId,
+      setId,
+      serialNumber
+    })
+    .then(async ([ id ]) => {
+      return Promise.resolve({ status: 201, body: await getById(id) })
+    })
+    .catch((error) => {
+      console.error(error);
+      return Promise.reject({ status: 404, message: 'Equipment not created' })
     });
-}
 
-async function update({ id, name, description, productionDate, categoryId }) {
-  return knex('equipment')
+const update = async (id, body) =>
+  knex('equipment')
     .where({ id })
     .update({
-      name,
-      description,
-      productionDate,
-      categoryId
+      ...body
+    })
+    .then(async () => Promise.resolve({ status: 200, body: await getById(id) }))
+    .catch((error) => {
+      console.error(error);
+      return Promise.reject({ status: 404, message: 'Equipment not found' })
     });
-}
 
-async function remove({ id }) {
-  return knex('equipment')
+const remove = async ({ id }) =>
+  knex('equipment')
     .where({ id })
     .del()
-}
+    .then((equipment) => Promise.resolve({ status: 204 }))
+    .catch((error) => {
+      console.error(error);
+      return Promise.reject({ status: 404, message: 'Equipment not found' })
+    });
 
-async function getById({ id }) {
-  return knex('equipment').where({ id }).first();
-}
+const get = async ({ id }) =>
+  getById(id)
+    .then((equipment) => Promise.resolve({ status: 200, body: equipment }))
+    .catch((error) => {
+      console.error(error);
+      return Promise.reject({ status: 404, message: 'Equipment not found' })
+    });
 
-async function getAll() {
-  return knex('equipment').select();
-}
+const getAll = async () =>
+  knex('equipment')
+    .select()
+    .then((equipment) => Promise.resolve({ status: 200, body: equipment }))
+    .catch((error) => {
+      console.error(error);
+      return Promise.reject({ status: 404, message: 'Equipment not found' })
+    });
+
+const getById = async (id) =>
+  knex('equipment').where({ id }).first();
+
+module.exports = {
+  create,
+  update,
+  remove,
+  get,
+  getAll
+};
