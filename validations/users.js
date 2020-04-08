@@ -7,6 +7,22 @@ const authenticate = {
   }
 };
 
+const create = {
+  body: {
+    username: joi.string().required(),
+    password: joi.string().required(),
+    admin: joi.bool().optional()
+  }
+}
+
+const pathId = {
+  params: {
+    id: joi.number().required()
+  }
+}
+
 module.exports = {
-  authenticate
+  authenticate,
+  create,
+  pathId
 };
