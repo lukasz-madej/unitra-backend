@@ -9,7 +9,7 @@ module.exports = {
 };
 
 async function create({ name, description, productionDate, categoryId }) {
-  return await knex('equipment')
+  return knex('equipment')
     .insert({
       name,
       description,
@@ -19,7 +19,7 @@ async function create({ name, description, productionDate, categoryId }) {
 }
 
 async function update({ id, name, description, productionDate, categoryId }) {
-  return await knex('equipment')
+  return knex('equipment')
     .where({ id })
     .update({
       name,
@@ -30,15 +30,15 @@ async function update({ id, name, description, productionDate, categoryId }) {
 }
 
 async function remove({ id }) {
-  return await knex('equipment')
+  return knex('equipment')
     .where({ id })
     .del()
 }
 
 async function getById({ id }) {
-  return await knex('equipment').where({ id }).first();
+  return knex('equipment').where({ id }).first();
 }
 
 async function getAll() {
-  return await knex('equipment').select();
+  return knex('equipment').select();
 }

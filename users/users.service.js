@@ -12,7 +12,7 @@ module.exports = {
 
 async function create({ username, password }) {
   const { salt, hash } = userHelper.saltHashPassword(password);
-  return await knex('users')
+  return knex('users')
     .insert({
       name,
       salt,
@@ -37,9 +37,9 @@ async function authenticate({ username, password }) {
 }
 
 async function getById({ id }) {
-  return await knex('users').where({ id }).first();
+  return knex('users').where({ id }).first();
 }
 
 async function getByUsername({ username }) {
-  return await knex('users').where({ username }).first();
+  return knex('users').where({ username }).first();
 }
