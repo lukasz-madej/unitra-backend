@@ -4,7 +4,7 @@ const pathId = {
   params: {
     id: joi.number().required()
   }
-}
+};
 
 const create = {
   body: {
@@ -15,21 +15,21 @@ const create = {
     categoryId: joi.number().optional(),
     setId: joi.number().optional()
   }
-}
+};
 
 const update = {
   params: {
     id: joi.number().required()
   },
   body: {
-    name: joi.string().required(),
+    name: joi.string().optional(),
     productionDate: joi.date().optional(),
     description: joi.string().optional(),
     serialNumber: joi.string().optional(),
     categoryId: joi.number().optional(),
     setId: joi.number().optional()
   }
-}
+};
 
 const setCategory = {
   params: {
@@ -38,7 +38,7 @@ const setCategory = {
   body: {
     categoryId: joi.number().required()
   }
-}
+};
 
 const setSet = {
   params: {
@@ -47,7 +47,7 @@ const setSet = {
   body: {
     setId: joi.number().required()
   }
-}
+};
 
 module.exports = {
   pathId,

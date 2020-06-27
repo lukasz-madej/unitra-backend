@@ -1,15 +1,10 @@
 const express = require('express');
-const router = express.Router();
+const validate = require('express-validation');
+
 const setsService = require('./sets.service');
+const setsValidations = require('../validations/sets');
 
-module.exports = router;
-
-router.get('/', getAll);
-router.get('/:id', getById);
-router.get('/:id/members', getByIdWithMembers);
-router.post('/:id', update);
-router.put('/', create);
-router.delete('/:id', remove);
+const router = express.Router();
 
 function getAll(request, response, next) {
   setsService.create(request.body)
@@ -19,17 +14,20 @@ function getAll(request, response, next) {
 
 function getById(request, response, next) {
   setsService.getById(request.params)
-    .then(set => set ?
-      response.json(set) :
-      response.status(404).json({ message: 'Set not found' }))
-    .catch(error => next(error));
-}
-
-function getByIdWithMembers(request, response, next) {
-  setsService.getById(request.params)
-    .then(set => set ?
-      response.json(set) :
-      response.status(404).json({ message: 'Set not found' }))
+    .then(set => {
+      if(!set) {
+        response.status(404).json({ message: 'Set not found' })
+      } else {
+        setsService.getSetMembers({ setId: set.id })
+          .then(members => {
+            response.json({
+              ...set,
+              members
+            })
+          })
+          .catch(error => next(error));
+      }
+    })
     .catch(error => next(error));
 }
 
@@ -52,3 +50,11 @@ function remove(request, response, next) {
     .then(set => response.status(200).json(set))
     .catch(error => next(error));
 }
+
+module.exports = router;
+
+router.get('/', getAll);
+router.get('/:id', validate(setsValidations.pathId), getById);
+router.put('/:id', validate(setsValidations.update), update);
+router.post('/', validate(setsValidations.create), create);
+router.delete('/:id', validate(setsValidations.pathId), remove);

@@ -6,7 +6,7 @@ module.exports = {
   remove,
   getAll,
   getById,
-  getByIdWithMembers
+  getSetMembers
 }
 
 async function create({ name, description }) {
@@ -41,9 +41,7 @@ async function getById({ id }) {
     .where({ id }).first();
 }
 
-async function getByIdWithMembers({ id }) {
-  return knex('sets')
-    .where({ id })
-    .leftJoin('equipment', 'sets.id', 'equipment.setId')
-    .first();
+async function getSetMembers ({ setId }) {
+  return knex('equipment')
+    .where({ setId });
 }

@@ -13,13 +13,13 @@ const create = {
     password: joi.string().required(),
     admin: joi.bool().optional()
   }
-}
+};
 
 const pathId = {
   params: {
     id: joi.number().required()
   }
-}
+};
 
 module.exports = {
   authenticate,

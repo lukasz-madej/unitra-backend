@@ -1,17 +1,10 @@
 const express = require('express');
+const validate = require('express-validation');
 
 const categoriesService = require('./categories.service');
+const categoriesValidations = require('../validations/categories');
 
 const router = express.Router();
-
-module.exports = router;
-
-router.get('/:id', getById)
-router.get('/', getAll);
-router.post('/:id', update);
-router.put('/', create);
-router.delete('/:id', remove);
-
 
 function getById(request, response, next) {
   categoriesService.getById(request.params)
@@ -45,3 +38,11 @@ function remove(request, response, next) {
     .then(category => response.status(200).json(category))
     .catch(error => next(error));
 }
+
+module.exports = router;
+
+router.get('/:id', validate(categoriesValidations.pathId), getById)
+router.get('/', getAll);
+router.put('/:id', validate(categoriesValidations.update), update);
+router.post('/', validate(categoriesValidations.create), create);
+router.delete('/:id', validate(categoriesValidations.pathId), remove);

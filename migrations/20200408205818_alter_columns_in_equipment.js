@@ -9,6 +9,6 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return knex.schema.table('equipment', t => {
     t.string('productionDate');
-    t.dropForeign(['categoryId', ['setId']]);
+    t.dropForeign(['categoryId', 'setId']);
   })
 };

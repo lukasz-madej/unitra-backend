@@ -1,7 +1,6 @@
 const knex = require('knex') (require('../knexfile'));
 const jwt = require('jsonwebtoken');
 
-const config = require('../config');
 const userHelper = require('../_helpers/user-helper');
 
 const create = async ({ username, password, admin = false }) => {
@@ -21,7 +20,9 @@ const authenticate = async ({ username, password }) => {
   const user = await getByUsername(username);
 
   if (user && user.active && user.password === userHelper.generateHash(password, user.salt).digest('hex')) {
-    const token = jwt.sign({ sub: user.id }, config.secret);
+    const token = jwt.sign({ userId: user.id }, process.env.SECRET, {
+      expiresIn: '24h'
+    });
 
     return Promise.resolve({
       status: 200,
