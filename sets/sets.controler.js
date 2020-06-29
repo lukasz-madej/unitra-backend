@@ -6,49 +6,34 @@ const setsValidations = require('../validations/sets');
 
 const router = express.Router();
 
-function getAll(request, response, next) {
+const getAll = async (request, response, next) => {
   setsService.create(request.body)
-    .then(sets => response.status(200).json(sets))
-    .catch(error => next(error));
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
 }
 
-function getById(request, response, next) {
-  setsService.getById(request.params)
-    .then(set => {
-      if(!set) {
-        response.status(404).json({ message: 'Set not found' })
-      } else {
-        setsService.getSetMembers({ setId: set.id })
-          .then(members => {
-            response.json({
-              ...set,
-              members
-            })
-          })
-          .catch(error => next(error));
-      }
-    })
-    .catch(error => next(error));
+const getById = async (request, response, next) => {
+  setsService.get(request.params)
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
 }
 
-function update(request, response, next) {
+const update = async (request, response, next) => {
   setsService.update({ id: request.params.id, ...request.body })
-    .then(set => set ?
-      response.json(set) :
-      response.status(404).json({ message: 'Set not found' }))
-    .catch(error => next(error))
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
 }
 
-function create(request, response, next) {
+const create = async (request, response, next) => {
   setsService.create(request.body)
-    .then(set => response.status(201).json(set))
-    .catch(error => next(error));
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
 }
 
-function remove(request, response, next) {
+const remove = async (request, response, next) => {
   setsService.remove(request.params)
-    .then(set => response.status(200).json(set))
-    .catch(error => next(error));
+    .then(result => response.status(result.status))
+    .catch(error => response.status(error.status).json(error));
 }
 
 module.exports = router;
