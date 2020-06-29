@@ -10,7 +10,7 @@ const create = async ({ name, description, productionDate, categoryId, setId, se
       setId,
       serialNumber
     })
-    .then(async ([ id ]) => {
+    .then(async ([id]) => {
       return Promise.resolve({ status: 201, body: await getById(id) })
     })
     .catch((error) => {
@@ -34,7 +34,7 @@ const remove = async ({ id }) =>
   knex('equipment')
     .where({ id })
     .del()
-    .then((equipment) => Promise.resolve({ status: 204 }))
+    .then(() => Promise.resolve({ status: 204 }))
     .catch((error) => {
       console.error(error);
       return Promise.reject({ status: 404, message: 'Equipment not found' })

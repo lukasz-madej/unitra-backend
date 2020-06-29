@@ -6,38 +6,35 @@ const categoriesValidations = require('../validations/categories');
 
 const router = express.Router();
 
-function getById(request, response, next) {
-  categoriesService.getById(request.params)
-    .then(category => response.status(201).json(category))
-    .catch(error => next(error));
-}
+const getById = (request, response, next) => {
+  categoriesService.get(request.params)
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+};
 
-function getAll(request, response, next) {
+const getAll = (request, response, next) => {
   categoriesService.getAll()
-    .then(categories => response.status(201).json(categories))
-    .catch(error => next(error));
-}
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+};
 
-function update(request, response, next) {
+const update = (request, response, next) => {
   categoriesService.update({ id: request.params.id, ...request.body })
-    .then(category => category ?
-      response.json(category) :
-      response.status(404).json({ message: 'Category not found' }))
-    .catch(error => next(error))
-}
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+};
 
-function create(request, response, next) {
+const create = (request, response, next) => {
   categoriesService.create(request.body)
-    .then(category => response.status(201).json(category))
-    .catch(error => next(error));
-}
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+};
 
-function remove(request, response, next) {
+const remove = (request, response, next) => {
   categoriesService.remove(request.params)
-    .then(categoriesService.removeCategoryRelations(request.params.id))
-    .then(category => response.status(200).json(category))
-    .catch(error => next(error));
-}
+    .then(result => response.status(result.status))
+    .catch(error => response.status(error.status).json(error));
+};
 
 module.exports = router;
 
