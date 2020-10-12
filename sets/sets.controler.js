@@ -32,7 +32,7 @@ const create = async (request, response, next) => {
 
 const remove = async (request, response, next) => {
   setsService.remove(request.params)
-    .then(result => response.status(result.status))
+    .then(result => response.status(result.status).json())
     .catch(error => response.status(error.status).json(error));
 }
 

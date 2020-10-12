@@ -18,17 +18,17 @@ const create = async ({ username, password, admin = false }) => {
 
 const authenticate = async ({ username, password }) => {
   const user = await getByUsername(username);
+  const expiresIn = 86400;
 
   if (user && user.active && user.password === userHelper.generateHash(password, user.salt).digest('hex')) {
-    const token = jwt.sign({ userId: user.id }, process.env.SECRET, {
-      expiresIn: '24h'
-    });
+    const token = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn });
 
     return Promise.resolve({
       status: 200,
       body: {
         user: getUserResponse(user),
-        token
+        token,
+        expiresIn
       }
     });
   } else {
@@ -69,7 +69,7 @@ const getById = async (id) =>
   knex('users').where({ id }).first();
 
 const getUserResponse = (user) => {
-  const { password, slat, ...userResponse } = user;
+  const { password, salt, ...userResponse } = user;
   return userResponse;
 };
 

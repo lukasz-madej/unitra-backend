@@ -32,7 +32,7 @@ const create = (request, response, next) => {
 
 const remove = (request, response, next) => {
   categoriesService.remove(request.params)
-    .then(result => response.status(result.status))
+    .then(result => response.status(result.status).json())
     .catch(error => response.status(error.status).json(error));
 };
 

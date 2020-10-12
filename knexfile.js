@@ -7,7 +7,7 @@ module.exports = {
     typeCast: (field, next) => {
       if (field.type === 'TINY' && field.length === 1) {
         const value = field.string();
-        return value ? Boolean(value) : null;
+        return value ? value === '1' : null;
       }
       return next();
     }
