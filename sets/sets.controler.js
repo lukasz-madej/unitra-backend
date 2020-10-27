@@ -7,7 +7,7 @@ const setsValidations = require('../validations/sets');
 const router = express.Router();
 
 const getAll = async (request, response, next) => {
-  setsService.create(request.body)
+  setsService.getAll()
     .then(result => response.status(result.status).json(result.body))
     .catch(error => response.status(error.status).json(error));
 }

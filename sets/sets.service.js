@@ -42,7 +42,7 @@ const get = async ({ id }) =>
     .then(async (set) => {
       const members = await getMembers(set.id);
 
-      return Promise.resolve({ status: 201, body: { ...set, members } })
+      return Promise.resolve({ status: 200, body: { ...set, members } })
     })
     .catch((error) => {
       console.error(error);
@@ -51,7 +51,18 @@ const get = async ({ id }) =>
 
 const getAll = async () =>
   knex('sets')
-    .then((sets) => Promise.resolve({ status: 201, body: sets }))
+    .then(async (sets) => {
+      const setsWithMembersCount = await Promise.all(
+        sets.map(
+          async (item) => {
+            const members = await getMembers(item.id);
+            return { ...item, membersCount: members.length };
+          }
+        )
+      )
+
+      return Promise.resolve({ status: 200, body: setsWithMembersCount })
+    })
     .catch((error) => {
       console.error(error);
       return Promise.reject({ status: 404, message: 'Sets not found' })
