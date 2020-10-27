@@ -1,5 +1,6 @@
 const knex = require('knex') (require('../knexfile'));
 
+const dataHelper = require('../_helpers/data_helper');
 const categoriesService = require('../categories/categories.service');
 const setsService = require('../sets/sets.service');
 
@@ -46,14 +47,7 @@ const remove = async ({ id }) =>
 const get = async ({ id }) =>
   getById(id)
     .then(async (equipment) => {
-      console.log(equipment);
-      console.log(id);
-      const category = equipment.categoryId ?
-        await categoriesService.get({ id: equipment.categoryId }).then(categoryResponse => categoryResponse.body) :
-        null;
-      const set = equipment.setId ?
-        await setsService.get({ id: equipment.setId }).then(setResponse => setResponse.body) :
-        null;
+      const { category, set } = await getEquipmentRelations(equipment);
       const { setId, categoryId, ...equipmentResponse } = equipment;
 
       return Promise.resolve({ status: 200, body: { ...equipmentResponse, category, set } })
@@ -63,10 +57,71 @@ const get = async ({ id }) =>
       return Promise.reject({ status: 404, message: 'Equipment not found' })
     });
 
-const getAll = async () =>
+const getAll = async (query) =>
   knex('equipment')
     .select()
-    .then((equipment) => Promise.resolve({ status: 200, body: equipment }))
+    .where((builder) => {
+      if (query.name) {
+        builder.where('name', 'like', `%${query.name}%`);
+      }
+
+      if (query.productionDateFrom && query.productionDateTo) {
+        builder.whereBetween('productionDate', [
+          dataHelper.getFirstSecondForYear(query.productionDateFrom),
+          dataHelper.getLastSecondForYear(query.productionDateTo)
+        ])
+      } else if (query.productionDateFrom) {
+        builder.where('productionDate', '>=', dataHelper.getFirstSecondForYear(query.productionDateFrom))
+      } else if (query.productionDateTo) {
+        builder.where('productionDate', '<=', dataHelper.getLastSecondForYear(query.productionDateTo))
+      }
+
+      if (query.serialNumber) {
+        builder.where('serialNumber', 'like', `%${query.serialNumber}%`);
+      }
+
+      if (query.categoryId) {
+        builder.where('categoryId',  query.categoryId);
+      }
+
+      if (query.setId) {
+        builder.where('setId',  query.setId);
+      }
+    })
+    .modify((builder) => {
+      if (query.categoryName) {
+        builder
+          .join('categories', 'equipment.categoryId', 'categories.id')
+          .where('categories.name', 'like', `%${query.categoryName}%`)
+      }
+
+      if (query.setName) {
+        builder
+          .join('sets', 'equipment.setId', 'sets.id')
+          .where('sets.name', 'like', `%${query.setName}%`)
+      }
+    })
+    .then(async (equipment) => {
+      const equipmentWithRelations = await Promise.all(
+        equipment.map(
+          async (item) => {
+            const relations = await getEquipmentRelations(item);
+            const { category, set } = relations;
+            const { setId, categoryId, ...equipmentResponse } = item;
+
+            return { ...equipmentResponse, category, set };
+          }
+        )
+      )
+
+      const response = equipmentWithRelations.map((item) => {
+        if (item.category) delete item.category.members;
+        if (item.set) delete item.set.members;
+
+        return item;
+      })
+      return Promise.resolve({ status: 200, body: response })
+    })
     .catch((error) => {
       console.error(error);
       return Promise.reject({ status: 404, message: 'Equipment not found' })
@@ -74,6 +129,17 @@ const getAll = async () =>
 
 const getById = async (id) =>
   knex('equipment').where({ id }).first();
+
+const getEquipmentRelations = async (equipment) => {
+  const category = equipment.categoryId ?
+    await categoriesService.get({ id: equipment.categoryId }).then(categoryResponse => categoryResponse.body) :
+    null;
+  const set = equipment.setId ?
+    await setsService.get({ id: equipment.setId }).then(setResponse => setResponse.body) :
+    null;
+
+  return { category, set };
+}
 
 module.exports = {
   create,

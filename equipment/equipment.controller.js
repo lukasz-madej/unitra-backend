@@ -13,7 +13,7 @@ const getById = (request, response, next) => {
 }
 
 const getAll = (request, response, next) => {
-  equipmentService.getAll()
+  equipmentService.getAll(request.query)
     .then(result => response.status(result.status).json(result.body))
     .catch(error => response.status(error.status).json(error));
 }
