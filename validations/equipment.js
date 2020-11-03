@@ -9,11 +9,12 @@ const pathId = {
 const create = {
   body: {
     name: joi.string().required(),
-    productionDate: joi.date().optional(),
-    description: joi.string().optional(),
-    serialNumber: joi.string().optional(),
-    categoryId: joi.number().optional(),
-    setId: joi.number().optional()
+    productionDate: joi.date().optional().allow([null, '']),
+    description: joi.string().optional().allow([null, '']),
+    serialNumber: joi.string().optional().allow([null, '']),
+    categoryId: joi.number().required(),
+    setId: joi.number().optional().allow([null, '']),
+    images: joi.array().items(joi.number()).optional().allow([null, ''])
   }
 };
 

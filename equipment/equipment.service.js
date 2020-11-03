@@ -4,7 +4,7 @@ const dataHelper = require('../_helpers/data_helper');
 const categoriesService = require('../categories/categories.service');
 const setsService = require('../sets/sets.service');
 
-const create = async ({ name, description, productionDate, categoryId, setId, serialNumber }) =>
+const create = async ({ name, description, productionDate, categoryId, setId, serialNumber, images }) =>
   knex('equipment')
     .insert({
       name,
@@ -15,6 +15,11 @@ const create = async ({ name, description, productionDate, categoryId, setId, se
       serialNumber
     })
     .then(async ([id]) => {
+      if (images.length) {
+        await knex('images')
+          .whereIn('id', images)
+          .update({ parentId: id })
+      }
       return Promise.resolve({ status: 201, body: await getById(id) })
     })
     .catch((error) => {
