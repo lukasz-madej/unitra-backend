@@ -132,8 +132,18 @@ const getAll = async (query) =>
       return Promise.reject({ status: 404, message: 'Equipment not found' })
     });
 
-const getById = async (id) =>
-  knex('equipment').where({ id }).first();
+const getById = async (id) => {
+  const equipment = await knex('equipment')
+    .where({id})
+    .first();
+  const images = await knex('images')
+    .where({ parentId: id })
+
+  return {
+    ...equipment,
+    images
+  }
+}
 
 const getEquipmentRelations = async (equipment) => {
   const category = equipment.categoryId ?
