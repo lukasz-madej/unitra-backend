@@ -5,7 +5,7 @@ const imageHelper = require('../_helpers/image-helper');
 const upload = async ({ body, file }) => {
   const { id, type } = body;
   const { originalname, location, size, key } = file;
-  const hasThumbnail = await imageHelper.createThumbnail(key);
+  const hasThumbnail = await imageHelper.createThumbnail(key, type);
 
   return knex('images')
     .insert({
@@ -53,6 +53,22 @@ const getAllById = async ({ id, type }) =>
       return Promise.reject({ status: 404, message: 'Images not found' })
     });
 
+const remove = async ({ id }) => {
+  const image = await getById(id);
+  await imageHelper.removeThumbnail(image.key, image.type);
+
+  return knex('images')
+    .where({ id })
+    .del()
+    .then((removed) =>
+      removed ? Promise.resolve({status: 204}) : Promise.reject({status: 404, message: 'Category not found'})
+    )
+    .catch((error) => {
+      console.error(error);
+      return Promise.reject({ status: 404, message: 'Category not found' })
+    });
+  }
+
 const getById = async (id) =>
   knex('images').where({ id }).first();
 
@@ -60,5 +76,6 @@ module.exports = {
   upload,
   get,
   getAll,
-  getAllById
+  getAllById,
+  remove
 };

@@ -14,7 +14,7 @@ const uploader = multer({
     s3,
     bucket: process.env.IMAGES_BUCKET,
     key: (request, file, callback) => {
-      callback(null, `${Date.now().toString()}_${file.originalname}`)
+      callback(null, `${request.body.type}/${Date.now().toString()}_${file.originalname}`)
     }
   })
 })
@@ -37,8 +37,15 @@ const upload = async (request, response, next) => {
     .catch(error => response.status(error.status).json(error));
 }
 
+const remove = async (request, response, next) => {
+  imagesService.remove(request.params)
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+}
+
 module.exports = router;
 
 router.get('/:id', validate(imagesValidations.pathId), get);
 router.get('/:type/:id', validate(imagesValidations.pathIdAndType), getAllById);
 router.post('/upload', [uploader.single('file'), validate(imagesValidations.upload)], upload);
+router.delete('/:id', validate(imagesValidations.pathId), remove);
