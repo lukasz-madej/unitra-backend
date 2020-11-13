@@ -23,12 +23,13 @@ const update = {
     id: joi.number().required()
   },
   body: {
-    name: joi.string().optional(),
-    productionDate: joi.date().optional(),
-    description: joi.string().optional(),
-    serialNumber: joi.string().optional(),
-    categoryId: joi.number().optional(),
-    setId: joi.number().optional()
+    name: joi.string().optional().allow([null, '']),
+    productionDate: joi.date().optional().allow([null, '']),
+    description: joi.string().optional().allow([null, '']),
+    serialNumber: joi.string().optional().allow([null, '']),
+    categoryId: joi.number().optional().allow([null, '']),
+    setId: joi.number().optional().allow([null, '']),
+    images: joi.array().items(joi.number()).optional().allow([null, ''])
   }
 };
 

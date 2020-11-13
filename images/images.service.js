@@ -53,6 +53,16 @@ const getAllById = async ({ id, type }) =>
       return Promise.reject({ status: 404, message: 'Images not found' })
     });
 
+const getAllByParentId = async ({ parentId }) =>
+  knex('images')
+    .select()
+    .where({ parentId })
+    .then((images) => Promise.resolve({ status: 200, body: images }))
+    .catch((error) => {
+      console.error(error);
+      return Promise.reject({ status: 404, message: 'Images not found' })
+    });
+
 const remove = async ({ id }) => {
   const image = await getById(id);
   await imageHelper.removeThumbnail(image.key, image.type);
@@ -77,5 +87,6 @@ module.exports = {
   get,
   getAll,
   getAllById,
+  getAllByParentId,
   remove
 };

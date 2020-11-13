@@ -27,11 +27,18 @@ const create = async ({ name, description, productionDate, categoryId, setId, se
       return Promise.reject({ status: 404, message: 'Equipment not created' })
     });
 
-const update = async (id, body) =>
+const update = async (id, { name, description, productionDate, categoryId, setId, serialNumber, images }) =>
   knex('equipment')
     .where({ id })
     .update({
-      ...body
+      ...dataHelper.removeEmptyProperties({
+        name,
+        description,
+        productionDate,
+        categoryId,
+        setId,
+        serialNumber
+      })
     })
     .then(async () => Promise.resolve({ status: 200, body: await getById(id) }))
     .catch((error) => {
