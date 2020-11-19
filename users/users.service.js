@@ -62,6 +62,18 @@ const get = async ({ id }) => {
     .catch(() => Promise.reject({ status: 404, message: 'User not found' }))
 };
 
+const getCurrent = async (header) => {
+  try {
+    const decoded = jwt.verify(header.replace('Bearer ', ''), process.env.SECRET);
+
+    return getById(decoded.userId)
+      .then((user) => Promise.resolve({ status: 200, body: getUserResponse(user) }))
+      .catch(() => Promise.reject({ status: 404, message: 'User not found' }))
+  } catch(error) {
+    return Promise.reject({ status: 401, message: 'Invalid username or password' })
+  }
+};
+
 const getByUsername = async (username) =>
   knex('users').where({ username }).first();
 
@@ -77,6 +89,7 @@ module.exports = {
   create,
   authenticate,
   get,
+  getCurrent,
   activate,
   deactivate
 };

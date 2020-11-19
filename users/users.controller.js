@@ -12,6 +12,12 @@ const get = (request, response, next) => {
     .catch(error => response.status(error.status).json(error));
 }
 
+const getCurrent = (request, response, next) => {
+  usersService.getCurrent(request.headers.authorization)
+    .then(result => response.status(result.status).json(result.body))
+    .catch(error => response.status(error.status).json(error));
+}
+
 const authenticate = (request, response, next) => {
   usersService.authenticate(request.body)
     .then(result => response.status(result.status).json(result.body))
@@ -38,8 +44,9 @@ const deactivate = (request, response, next) => {
 
 module.exports = router;
 
-router.get('/:id', validate(usersValidations.pathId), get);
+router.get('/current', getCurrent);
 router.post('/authenticate', validate(usersValidations.authenticate), authenticate);
 router.post('/create', validate(usersValidations.create), create);
 router.patch('/activate/:id', validate(usersValidations.pathId), activate);
 router.patch('/deactivate/:id', validate(usersValidations.pathId), deactivate);
+router.get('/:id', validate(usersValidations.pathId), get);
